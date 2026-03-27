@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     try {
-      const response = await fetch("https://myportfolio-production-2545.up.railway.app/contact", {
+      const response = await fetch("/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const result = await response.json();
 
-      if (response.ok) {
+      if (result.success) {
         alert("Message sent successfully ✅");
         form.reset();
       } else {
