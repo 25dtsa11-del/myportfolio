@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5500"; // Backend URL
+const API_BASE = "http://localhost:5500";
 
 const form = document.getElementById("contactForm");
 const responseEl = document.getElementById("response");
@@ -13,20 +13,22 @@ form.addEventListener("submit", async (e) => {
   try {
     const res = await fetch(`${API_BASE}/contact`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ name, email, message }),
     });
 
     const data = await res.json();
 
     if (data.success) {
-      responseEl.innerText = data.message;
+      responseEl.innerText = "✅ Message sent successfully!";
       form.reset();
     } else {
-      responseEl.innerText = data.error || "Failed to send message";
+      responseEl.innerText = data.error;
     }
-  } catch (err) {
-    console.error(err);
-    responseEl.innerText = "Error sending message";
+  } catch (error) {
+    console.error(error);
+    responseEl.innerText = "❌ Server error";
   }
 });

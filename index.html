@@ -13,7 +13,7 @@
 
 <body>
 
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <header>
     <h1 class="title">Alia Fathima 👩‍💻</h1>
     <p class="subtitle">Database Science Student</p>
@@ -24,8 +24,7 @@
     <h2>About Me</h2>
     <p>
       I am a passionate Database Science student who loves working with data,
-      SQL, and building intelligent solutions. I enjoy learning new technologies
-      and solving real-world problems using data.
+      SQL, and building intelligent solutions.
     </p>
   </section>
 
@@ -40,12 +39,7 @@
 
     <div class="project-card">
       <h3>Sales Analysis Dashboard</h3>
-      <p>Analyzed sales data using Python and created insights.</p>
-    </div>
-
-    <div class="project-card">
-      <h3>Customer Data Management</h3>
-      <p>Designed a database system to manage customer information.</p>
+      <p>Analyzed sales data using Python.</p>
     </div>
 
   </section>
@@ -54,17 +48,17 @@
   <section class="contact">
     <h2>Contact Me</h2>
 
-    <!-- ✅ FORM FIXED -->
-    <form action="https://formspree.io/f/xgongnln" method="POST">
+    <form id="contactForm">
 
+      <input type="text" id="name" placeholder="Your Name" required><br><br>
 
-      <input type="text" name="name" placeholder="Your Name" required><br><br>
+      <input type="email" id="email" placeholder="Your Email" required><br><br>
 
-      <input type="email" name="email" placeholder="Your Email" required><br><br>
-
-      <textarea name="message" placeholder="Your Message" required></textarea><br><br>
+      <textarea id="message" placeholder="Your Message" required></textarea><br><br>
 
       <button type="submit">Send Message</button>
+
+      <p id="response"></p>
 
     </form>
 
@@ -74,6 +68,8 @@
   <footer>
     <p>© 2026 Alia Fathima | Portfolio</p>
   </footer>
+
+  <script src="js/main.js"></script>
 
 </body>
 </html>

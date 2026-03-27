@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-require("dotenv").config(); // to use .env file for password
+const mysql = require("mysql2");
+require("dotenv").config();
 
 const app = express();
 const PORT = 5500;
@@ -9,46 +10,64 @@ const PORT = 5500;
 app.use(cors());
 app.use(express.json());
 
-// Contact form route
+// ✅ MYSQL CONNECTION
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Lia#123@", // ⚠️ put your MySQL password
+  database: "portfolio_db"
+});
+
+db.connect((err) => {
+  if (err) {
+    console.log("MySQL Error:", err);
+  } else {
+    console.log("MySQL Connected ✅");
+  }
+});
+
+// ✅ CONTACT FORM
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
-    return res.json({ success: false, error: "All fields are required" });
+    return res.json({ success: false, error: "All fields required" });
   }
 
-  try {
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "aliafathima2006@gmail.com", // your Gmail
-        pass: process.env.EMAIL_PASS      // your app password
-      },
-    });
+  // 🔹 SAVE TO MYSQL
+  const sql = "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)";
+  db.query(sql, [name, email, message], async (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.json({ success: false, error: "Database error" });
+    }
 
-    // Test connection (optional, helps debug)
-    await transporter.verify();
+    // 🔹 SEND EMAIL
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "aliafathima2006@gmail.com",
+          pass: process.env.EMAIL_PASS
+        },
+      });
 
-    // Mail options
-    const mailOptions = {
-      from: "aliafathima2006@gmail.com", // must be your Gmail
-      replyTo: email,                    // user’s email for reply
-      to: "aliafathima2006@gmail.com",   // receive the message
-      subject: "New Portfolio Message",
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-    };
+      await transporter.sendMail({
+        from: "aliafathima2006@gmail.com",
+        to: "aliafathima2006@gmail.com",
+        subject: "New Portfolio Message",
+        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
+      });
 
-    // Send email
-    await transporter.sendMail(mailOptions);
+      res.json({ success: true, message: "Message sent & saved ✅" });
 
-    res.json({ success: true, message: "Thank you for responding! 😊" });
-  } catch (error) {
-    console.error("Email sending error:", error);
-    res.json({ success: false, error: "Failed to send email." });
-  }
+    } catch (error) {
+      console.log(error);
+      res.json({ success: false, error: "Email failed" });
+    }
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
