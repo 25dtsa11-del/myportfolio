@@ -1,56 +1,33 @@
 const express = require("express");
+const mysql = require("mysql2");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
-require("dotenv").config();
-const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend
-app.use(express.static(__dirname));
-
-// Home route
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Lia#123@",
+  database: "alia_db"
 });
 
-// Contact route
-app.post("/contact", async (req, res) => {
+db.connect(err => {
+  if (err) console.log(err);
+  else console.log("MySQL Connected");
+});
+
+app.post("/contact", (req, res) => {
   const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-    return res.json({ success: false, error: "All fields required" });
-  }
+  const sql = "INSERT INTO contacts (name,email,message) VALUES (?,?,?)";
 
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "aliafathima2006@gmail.com",
-        pass: process.env.EMAIL_PASS
-      },
-    });
-
-    await transporter.sendMail({
-      from: "aliafathima2006@gmail.com",
-      to: "aliafathima2006@gmail.com",
-      subject: "New Portfolio Message",
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
-    });
-
-    res.json({ success: true });
-
-  } catch (error) {
-    console.log("Email Error:", error);
-    res.json({ success: false, error: "Email failed" });
-  }
+  db.query(sql, [name, email, message], (err) => {
+    if (err) return res.status(500).send(err);
+    res.send("Saved");
+  });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(5000, () => console.log("Server running"));

@@ -1,0 +1,51 @@
+const form = document.getElementById("contactForm");
+const responseMsg = document.getElementById("response");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = form.name.value;
+
+  const formData = {
+    name: name,
+    email: form.email.value,
+    message: form.message.value
+  };
+
+  try {
+    const btn = form.querySelector("button");
+    btn.innerText = "Sending...";
+    btn.disabled = true;
+
+    // ✅ Formspree
+    await fetch("https://formspree.io/f/xgongnln", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    // ✅ Backend (MySQL)
+    await fetch("http://127.0.0.1:5000/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    // ✅ SHOW MESSAGE IN PAGE (not alert)
+    responseMsg.innerText = `Thank you for submitting the form, ${name}. You will be contacted soon.`;
+
+    form.reset();
+
+  } catch (err) {
+    console.error(err);
+    responseMsg.innerText = "Error sending message";
+  } finally {
+    const btn = form.querySelector("button");
+    btn.innerText = "Send Message";
+    btn.disabled = false;
+  }
+});
