@@ -1,34 +1,38 @@
-const API_BASE = "http://localhost:5500";
+document.addEventListener("DOMContentLoaded", function () {
 
-const form = document.getElementById("contactForm");
-const responseEl = document.getElementById("response");
+  const form = document.querySelector("form");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const message = document.getElementById("message").value;
+    const formData = {
+      name: form.querySelector('input[name="name"]').value,
+      email: form.querySelector('input[name="email"]').value,
+      message: form.querySelector('textarea[name="message"]').value
+    };
 
-  try {
-    const res = await fetch(`${API_BASE}/contact`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, message }),
-    });
+    try {
+      const response = await fetch("https://myportfolio-production-2545.up.railway.app/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
 
-    const data = await res.json();
+      const result = await response.json();
 
-    if (data.success) {
-      responseEl.innerText = "✅ Message sent successfully!";
-      form.reset();
-    } else {
-      responseEl.innerText = data.error;
+      if (response.ok) {
+        alert("Message sent successfully ✅");
+        form.reset();
+      } else {
+        alert("Error: " + result.error);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong ❌");
     }
-  } catch (error) {
-    console.error(error);
-    responseEl.innerText = "❌ Server error";
-  }
+  });
+
 });
