@@ -1,26 +1,25 @@
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const path = require("path");
 require("dotenv").config();
+const path = require("path");
 
 const app = express();
-
-// ✅ IMPORTANT FOR RAILWAY
 const PORT = process.env.PORT || 5500;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// ✅ SERVE FRONTEND FILES (VERY IMPORTANT)
+// ✅ Serve frontend files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "..")));
 
-// ✅ HOME ROUTE (SHOW YOUR WEBSITE)
+// ✅ Home route (open index.html)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-// ✅ CONTACT FORM (EMAIL)
+// ✅ Contact route (send email)
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -52,8 +51,7 @@ app.post("/contact", async (req, res) => {
   }
 });
 
-// ✅ START SERVER
-app.listen(PORT, () => {
+// ✅ IMPORTANT: Listen on Railway port
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
-New
